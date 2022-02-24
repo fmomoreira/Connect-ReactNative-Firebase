@@ -1,14 +1,14 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
 import firebase from "./firebase/firebaseconfig"
 
 
 function App() {
+  const [price, setPrice] = useState(0)
 
   const database = firebase.firestore()
 
-
-  const getDataFirebase = database.collection('nameCollecitonExample')
+  const getSumPrices  = database.collection('finance')
   .onSnapshot(querySnapshot => {
     const data  = querySnapshot.docs.map((doc) => {
       return {
@@ -16,27 +16,22 @@ function App() {
         ...doc.data()
       }
     }) 
-  return () => getDataFirebase();
+    const prices = data.map((item)=>{
+      return (
+        item.price
+      )
+    })
+    
+    let total = prices.reduce((total, prices) => total + prices, 0);
+    setPrice(total)
+    return () => getSumPrices();
   })
   
 
   
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <h1>${price.toFixed(2)}</h1>
     </div>
   );
 }
